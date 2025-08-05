@@ -1,5 +1,5 @@
-import type { UsersRepository } from "@/"
-import { UserAlreadyExistsError } from "@/"
+import type { UsersRepository } from "@/repositories/users-repository.js"
+import { UserAlreadyExistsError } from "@/services/errors/user-already-exists-error.js"
 import { hash } from "bcryptjs"
 
 interface RegisterUserServiceRequest{
@@ -26,12 +26,12 @@ class RegisterUserService{
         if (userWithSameEmail){
             throw new UserAlreadyExistsError()
         }
-        const hashedPassord = await this.hashPassword(password)
+        const hashedPassword = await this.hashPassword(password)
 
         await this.usersRepository.create({
             name,
             email,
-            hashedPassord
+            password: hashedPassword
         })
 
     }
