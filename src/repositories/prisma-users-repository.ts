@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma"
+import { Prisma } from "@prisma/client"
+import type { UsersRepository } from "./users-repository.js"
 
 
 interface UserRequest{
@@ -7,13 +9,21 @@ interface UserRequest{
     password:string
 }
 
-class PrismaUsersRepository {
+class PrismaUsersRepository implements UsersRepository{
+    async findByEmail(email: string): Promise<prisma | null> {
+       const user = await prisma.user.findUnique({
+            where:{email}
+        })
+
+        return user
+    }
     async create(data:UserRequest) {
         const user = await prisma.user.create({
             data,
         })
         return user
     }
+
 
 }
 

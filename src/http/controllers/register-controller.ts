@@ -3,6 +3,8 @@ import { hash } from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { RegisterUserService } from '@/services/register-user-service';
+import { PrismaUsersRepository } from "@/";
+import { UserAlreadyExistsError } from "@/";
 
 
 
@@ -19,13 +21,20 @@ class RegisterController {
             const service = new RegisterUserService();
 
             try {
-                await service.execute({
+                const usersRepository = new PrismaUsersRepository()
+                const registerUserService = new RegisterUserService(usersRepository)
+
+                await registerUserService.execute({
                     name,
                     email,
                     password
                 })
             } catch (error) {
-                return response.status(409).send()
+                if(error instanceof UserAlreadyExistsError){
+                    return response.status(409).send()
+                }
+                
+                throw error
             }
         
             return response.status(201).send()
