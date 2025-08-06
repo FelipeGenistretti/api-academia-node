@@ -28,11 +28,13 @@ class RegisterUserService{
         }
         const hashedPassword = await this.hashPassword(password)
 
-        await this.usersRepository.create({
+        const user = await this.usersRepository.create({
             name,
             email,
             password: hashedPassword
         })
+
+        return { user }
 
     }
 

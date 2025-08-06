@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma.js" 
-import type { UsersRepository } from "./users-repository.js"
-import { User } from "@prisma/client"
+import type { GymsRepository } from "./gyms-repository.js"
+import { Gym } from "@prisma/client"
 
 
 interface UserRequest{
@@ -9,10 +9,10 @@ interface UserRequest{
     password:string
 }
 
-class PrismaUsersRepository implements UsersRepository{
-    async findById(id: string): Promise<User | null> {
-        const user = await prisma.user.findUnique({where:{id}})
-        return user
+class PrismaGymsRepository implements GymsRepository{
+    async findById(id: string): Promise<Gym | null> {
+        return 
+        
     }
 
     async findByEmail(email: string): Promise<User | null> {
@@ -32,4 +32,4 @@ class PrismaUsersRepository implements UsersRepository{
 
 }
 
-export { PrismaUsersRepository }
+export { PrismaGymsRepository }
