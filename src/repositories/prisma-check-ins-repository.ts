@@ -10,12 +10,23 @@ interface CheckInsRequest {
 }
 
 class PrismaCheckInsRepository implements CheckInsRepository {
-  async findById(id: string): Promise<User | null> {
-    const user = await prisma.user.findUnique({
-      where: { id },
+
+  async countByUserId(userId: string): Promise<number> {
+    const count = await prisma.checkIn.count({
+      where: {
+        user_id: userId
+      }
+    })
+    return count
+  }
+
+  
+  async findById(checkInId: string): Promise<CheckIn | null> {
+    const checkIn = await prisma.checkIn.findUnique({
+      where: { id:checkInId },
     })
 
-    return user
+    return checkIn
   }
 
   async findByUserIdOnDate(userId: string, date: Date): Promise<CheckIn | null> {
@@ -25,7 +36,7 @@ class PrismaCheckInsRepository implements CheckInsRepository {
     const checkIn = await prisma.checkIn.findFirst({
       where: {
         user_id: userId,
-        createAd: {
+        createdAd: {
           gte: startOfDay,
           lte: endOfDay,
         },
@@ -34,6 +45,23 @@ class PrismaCheckInsRepository implements CheckInsRepository {
 
     return checkIn
   }
+
+  async findManyByUserId(user_id: string, page:number): Promise<CheckIn[]> {
+    const pageSize = 15
+    const checkIns = await prisma.checkIn.findMany({
+      where: {
+        user_id: user_id
+      },
+      skip:(page - 1) * pageSize,
+      take: pageSize,
+      orderBy: {
+        createdAd:'desc'
+      }
+    })
+    
+    return checkIns
+  }
+
 
   async create(data: CheckInsRequest): Promise<CheckIn> {
     const checkIn = await prisma.checkIn.create({
